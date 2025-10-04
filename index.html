@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedPlus Pharmacy - Uruk Healthcare Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar__header">
+                <div class="logo">
+                    <i class="fas fa-pills"></i>
+                    <span>MedPlus</span>
+                </div>
+                <div class="pharmacy-info">
+                    <p><strong>Mr. Suresh Gupta</strong></p>
+                    <p class="text-secondary">License: PL12345</p>
+                </div>
+            </div>
+            <ul class="sidebar__menu">
+                <li><a href="#dashboard" class="sidebar__link active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#inventory" class="sidebar__link" data-page="inventory"><i class="fas fa-boxes"></i> Inventory Management</a></li>
+                <li><a href="#prescriptions" class="sidebar__link" data-page="prescriptions"><i class="fas fa-prescription-bottle"></i> Prescriptions</a></li>
+                <li><a href="#customers" class="sidebar__link" data-page="customers"><i class="fas fa-users"></i> Customers & U-Cards</a></li>
+                <li><a href="#sales" class="sidebar__link" data-page="sales"><i class="fas fa-cash-register"></i> Sales & Orders</a></li>
+                <li><a href="#suppliers" class="sidebar__link" data-page="suppliers"><i class="fas fa-truck"></i> Suppliers</a></li>
+                <li><a href="#staff" class="sidebar__link" data-page="staff"><i class="fas fa-user-tie"></i> Staff Management</a></li>
+                <li><a href="#analytics" class="sidebar__link" data-page="analytics"><i class="fas fa-chart-bar"></i> Analytics & Reports</a></li>
+                <li><a href="#compliance" class="sidebar__link" data-page="compliance"><i class="fas fa-shield-alt"></i> Compliance</a></li>
+                <li><a href="#settings" class="sidebar__link" data-page="settings"><i class="fas fa-cog"></i> Settings & Profile</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="page__header">
+                    <h1>Dashboard</h1>
+                    <div class="header-actions">
+                        <button class="btn btn--secondary" onclick="refreshData()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn--primary" onclick="showProcessPrescriptionModal()">
+                            <i class="fas fa-plus"></i> Process Prescription
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Today's Stats -->
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <div class="card__body">
+                            <div class="stat">
+                                <div class="stat__icon bg-1"><i class="fas fa-rupee-sign"></i></div>
+                                <div class="stat__content">
+                                    <h3>Today's Sales</h3>
+                                    <p id="dailySales">₹45,600</p>
+                                    <small class="text-success">+12% from yesterday</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="card__body">
+                            <div class="stat">
+                                <div class="stat__icon bg-2"><i class="fas fa-prescription-bottle"></i></div>
+                                <div class="stat__content">
+                                    <h3>Prescriptions Filled</h3>
+                                    <p id="prescriptionsFilled">87</p>
+                                    <small class="text-secondary">4 pending</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="card__body">
+                            <div class="stat">
+                                <div class="stat__icon bg-3"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="stat__content">
+                                    <h3>Low Stock Alerts</h3>
+                                    <p id="lowStockAlerts">12</p>
+                                    <small class="text-warning">Requires attention</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="card__body">
+                            <div class="stat">
+                                <div class="stat__icon bg-4"><i class="fas fa-id-card"></i></div>
+                                <div class="stat__content">
+                                    <h3>U-Card Transactions</h3>
+                                    <p id="uCardTransactions">34</p>
+                                    <small class="text-success">₹8,200 today</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h2>Quick Actions</h2>
+                    <div class="quick-actions__grid">
+                        <button class="btn btn--primary quick-action-btn" onclick="showAddMedicineModal()">
+                            <i class="fas fa-pills"></i>
+                            Add New Medicine
+                        </button>
+                        <button class="btn btn--secondary quick-action-btn" onclick="showProcessPrescriptionModal()">
+                            <i class="fas fa-prescription"></i>
+                            Process Prescription
+                        </button>
+                        <button class="btn btn--secondary quick-action-btn" onclick="showEmergencyStockModal()">
+                            <i class="fas fa-shipping-fast"></i>
+                            Emergency Stock Order
+                        </button>
+                        <button class="btn btn--secondary quick-action-btn" onclick="showPage('customers')">
+                            <i class="fas fa-search"></i>
+                            Find Customer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Charts and Analytics -->
+                <div class="dashboard-charts">
+                    <div class="card">
+                        <div class="card__body">
+                            <h2>Daily Sales Trend</h2>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h2>Real-time Notifications</h2>
+                            <div id="realTimeNotifications" class="notifications-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card__body">
+                        <h2>Recent Transactions</h2>
+                        <div id="recentTransactions" class="transactions-list"></div>
+                        <button class="btn btn--outline" onclick="showPage('sales')">View All Transactions</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Management Page -->
+            <div id="inventory" class="page">
+                <div class="page__header">
+                    <h1>Inventory Management</h1>
+                    <div class="header-actions">
+                        <button class="btn btn--secondary" onclick="exportInventory()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button class="btn btn--primary" onclick="showAddMedicineModal()">
+                            <i class="fas fa-plus"></i> Add Medicine
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Inventory Filters -->
+                <div class="inventory-filters">
+                    <div class="filter-group">
+                        <input type="text" class="form-control" id="inventorySearch" placeholder="Search medicines...">
+                        <select class="form-control" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="In Stock">In Stock</option>
+                            <option value="Low Stock">Low Stock</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                        </select>
+                        <select class="form-control" id="supplierFilter">
+                            <option value="">All Suppliers</option>
+                            <option value="Pharma Corp">Pharma Corp</option>
+                            <option value="MediSupply">MediSupply</option>
+                            <option value="HealthMed">HealthMed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Inventory Overview Cards -->
+                <div class="inventory-overview">
+                    <div class="card overview-card">
+                        <div class="card__body">
+                            <h3>Total Inventory Value</h3>
+                            <p class="value">₹28,50,000</p>
+                        </div>
+                    </div>
+                    <div class="card overview-card">
+                        <div class="card__body">
+                            <h3>Total Items</h3>
+                            <p class="value">745</p>
+                        </div>
+                    </div>
+                    <div class="card overview-card">
+                        <div class="card__body">
+                            <h3>Expired Items</h3>
+                            <p class="value text-error">3</p>
+                        </div>
+                    </div>
+                    <div class="card overview-card">
+                        <div class="card__body">
+                            <h3>Reorder Required</h3>
+                            <p class="value text-warning">12</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory List -->
+                <div class="card">
+                    <div class="card__body">
+                        <h2>Medicine Inventory</h2>
+                        <div id="inventoryList" class="inventory-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prescriptions Page -->
+            <div id="prescriptions" class="page">
+                <div class="page__header">
+                    <h1>Prescriptions</h1>
+                    <div class="header-actions">
+                        <button class="btn btn--secondary" onclick="scanBarcode()">
+                            <i class="fas fa-barcode"></i> Scan Barcode
+                        </button>
+                        <button class="btn btn--primary" onclick="showProcessPrescriptionModal()">
+                            <i class="fas fa-plus"></i> New Prescription
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prescription Status Cards -->
+                <div class="prescription-status">
+                    <div class="status-card pending">
+                        <h3>Pending</h3>
+                        <p id="pendingCount">2</p>
+                    </div>
+                    <div class="status-card progress">
+                        <h3>In Progress</h3>
+                        <p id="progressCount">1</p>
+                    </div>
+                    <div class="status-card ready">
+                        <h3>Ready</h3>
+                        <p id="readyCount">1</p>
+                    </div>
+                    <div class="status-card completed">
+                        <h3>Dispensed</h3>
+                        <p id="completedCount">83</p>
+                    </div>
+                </div>
+
+                <!-- Prescription Queue -->
+                <div class="card">
+                    <div class="card__body">
+                        <h2>Prescription Queue</h2>
+                        <div id="prescriptionQueue" class="prescription-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers & U-Cards Page -->
+            <div id="customers" class="page">
+                <div class="page__header">
+                    <h1>Customers & U-Cards</h1>
+                    <button class="btn btn--primary" onclick="showAddCustomerModal()">
+                        <i class="fas fa-user-plus"></i> Add Customer
+                    </button>
+                </div>
+
+                <!-- Customer Search -->
+                <div class="customer-search">
+                    <div class="search-group">
+                        <input type="text" class="form-control" id="customerSearch" placeholder="Search by name, phone, or U-Card number...">
+                        <button class="btn btn--secondary" onclick="searchCustomers()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Customer Stats -->
+                <div class="customer-stats">
+                    <div class="card stat-card">
+                        <div class="card__body">
+                            <h3>Total Customers</h3>
+                            <p class="value">2,456</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="card__body">
+                            <h3>U-Card Holders</h3>
+                            <p class="value">1,892</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="card__body">
+                            <h3>Loyalty Points Issued</h3>
+                            <p class="value">48,750</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="card__body">
+                            <h3>Monthly Active</h3>
+                            <p class="value">856</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer List -->
+                <div class="card">
+                    <div class="card__body">
+                        <h2>Customer Database</h2>
+                        <div id="customersList" class="customers-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales & Orders Page -->
+            <div id="sales" class="page">
+                <div class="page__header">
+                    <h1>Sales & Orders</h1>
+                    <div class="header-actions">
+                        <button class="btn btn--secondary" onclick="showPOSModal()">
+                            <i class="fas fa-calculator"></i> POS
+                        </button>
+                        <button class="btn btn--primary" onclick="showNewSaleModal()">
+                            <i class="fas fa-plus"></i> New Sale
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sales Summary -->
+                <div class="sales-summary">
+                    <div class="card summary-card">
+                        <div class="card__body">
+                            <h3>Today's Revenue</h3>
+                            <p class="value">₹45,600</p>
+                            <small class="text-success">87 transactions</small>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card__body">
+                            <h3>Monthly Revenue</h3>
+                            <p class="value">₹12,50,000</p>
+                            <small class="text-secondary">2,341 transactions</small>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card__body">
+                            <h3>Average Order Value</h3>
+                            <p class="value">₹524</p>
+                            <small class="text-secondary">+8% from last month</small>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card__body">
+                            <h3>U-Card Payments</h3>
+                            <p class="value">34%</p>
+                            <small class="text-success">₹15,504 today</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Sales -->
+                <div class="card">
+                    <div class="card__body">
+                        <h2>Recent Sales</h2>
+                        <div id="salesList" class="sales-list"></div>
+                        <button class="btn btn--outline" onclick="loadMoreSales()">Load More</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suppliers Page -->
+            <div id="suppliers" class="page">
+                <div class="page__header">
+                    <h1>Suppliers</h1>
+                    <button class="btn btn--primary" onclick="showAddSupplierModal()">
+                        <i class="fas fa-plus"></i> Add Supplier
+                    </button>
+                </div>
+
+                <!-- Suppliers List -->
+                <div id="suppliersList" class="suppliers-grid"></div>
+            </div>
+
+            <!-- Staff Management Page -->
+            <div id="staff" class="page">
+                <div class="page__header">
+                    <h1>Staff Management</h1>
+                    <button class="btn btn--primary" onclick="showAddStaffModal()">
+                        <i class="fas fa-user-plus"></i> Add Staff
+                    </button>
+                </div>
+
+                <!-- Staff Overview -->
+                <div class="staff-overview">
+                    <div class="card overview-card">
+                        <div class="card__body">
+                            <h3>Total Staff</h3>
+                            <p class="value">8</p>
+                        </div>
+                    </div>
+                    <div class="card overview-card">
+                        <div class="card__body">
+                            <h3>On Duty</h3>
+                            <p class="value text-success">6</p>
+                        </div>
+                    </div>
+                    <div class="card overview-card">
+                        <div class="card__body">
+                            <h3>Pharmacists</h3>
+                            <p class="value">3</p>
+                        </div>
+                    </div>
+                    <div class="card overview-card">
+                        <div class="card__body">
+                            <h3>Technicians</h3>
+                            <p class="value">5</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff List -->
+                <div class="card">
+                    <div class="card__body">
+                        <h2>Staff Directory</h2>
+                        <div id="staffList" class="staff-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics & Reports Page -->
+            <div id="analytics" class="page">
+                <div class="page__header">
+                    <h1>Analytics & Reports</h1>
+                    <button class="btn btn--primary" onclick="generateReport()">
+                        <i class="fas fa-file-download"></i> Generate Report
+                    </button>
+                </div>
+
+                <!-- Analytics Charts -->
+                <div class="analytics-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h2>Monthly Sales Trend</h2>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="monthlySalesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h2>Popular Medicines</h2>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="popularMedicinesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h2>U-Card Usage Trend</h2>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="uCardChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h2>Customer Satisfaction</h2>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="satisfactionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance Page -->
+            <div id="compliance" class="page">
+                <div class="page__header">
+                    <h1>Compliance & Regulatory</h1>
+                    <button class="btn btn--primary" onclick="generateComplianceReport()">
+                        <i class="fas fa-clipboard-check"></i> Generate Report
+                    </button>
+                </div>
+
+                <!-- Compliance Status -->
+                <div class="compliance-status">
+                    <div class="card compliance-card success">
+                        <div class="card__body">
+                            <h3><i class="fas fa-check-circle"></i> License Status</h3>
+                            <p>Valid until Dec 2025</p>
+                        </div>
+                    </div>
+                    <div class="card compliance-card success">
+                        <div class="card__body">
+                            <h3><i class="fas fa-check-circle"></i> Drug License</h3>
+                            <p>Valid until Nov 2025</p>
+                        </div>
+                    </div>
+                    <div class="card compliance-card warning">
+                        <div class="card__body">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Audit Due</h3>
+                            <p>Due in 30 days</p>
+                        </div>
+                    </div>
+                    <div class="card compliance-card success">
+                        <div class="card__body">
+                            <h3><i class="fas fa-check-circle"></i> Staff Training</h3>
+                            <p>All current</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="card">
+                    <div class="card__body">
+                        <h2>Compliance Alerts</h2>
+                        <div id="complianceAlerts" class="alerts-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings & Profile Page -->
+            <div id="settings" class="page">
+                <div class="page__header">
+                    <h1>Settings & Profile</h1>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h2>Pharmacy Information</h2>
+                            <form id="pharmacyForm">
+                                <div class="form-group">
+                                    <label class="form-label">Pharmacy Name</label>
+                                    <input type="text" class="form-control" id="pharmacyName" value="MedPlus Pharmacy">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Owner Name</label>
+                                    <input type="text" class="form-control" id="ownerName" value="Mr. Suresh Gupta">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">License Number</label>
+                                    <input type="text" class="form-control" id="licenseNumber" value="PL12345">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="pharmacyPhone" value="+91-9876543220">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="pharmacyEmail" value="suresh@medplus.com">
+                                </div>
+                                <button type="submit" class="btn btn--primary">Update Information</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h2>System Preferences</h2>
+                            <div class="preferences">
+                                <div class="preference-item">
+                                    <label>
+                                        <input type="checkbox" id="autoReorder" checked> Enable Auto-Reorder
+                                    </label>
+                                </div>
+                                <div class="preference-item">
+                                    <label>
+                                        <input type="checkbox" id="lowStockAlerts" checked> Low Stock Alerts
+                                    </label>
+                                </div>
+                                <div class="preference-item">
+                                    <label>
+                                        <input type="checkbox" id="expiryAlerts" checked> Expiry Alerts
+                                    </label>
+                                </div>
+                                <div class="preference-item">
+                                    <label>
+                                        <input type="checkbox" id="uCardIntegration" checked> U-Card Integration
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="addMedicineModal" class="modal hidden">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2>Add New Medicine</h2>
+                <button class="modal__close" onclick="closeModal('addMedicineModal')">&times;</button>
+            </div>
+            <form id="addMedicineForm">
+                <div class="form-group">
+                    <label class="form-label">Medicine Name</label>
+                    <input type="text" class="form-control" id="medicineName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Batch Number</label>
+                    <input type="text" class="form-control" id="batchNumber" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Expiry Date</label>
+                    <input type="date" class="form-control" id="expiryDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stock Quantity</label>
+                    <input type="number" class="form-control" id="stockQuantity" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reorder Level</label>
+                    <input type="number" class="form-control" id="reorderLevel" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price (₹)</label>
+                    <input type="number" class="form-control" id="medicinePrice" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Supplier</label>
+                    <select class="form-control" id="medicineSupplier" required>
+                        <option value="">Select Supplier</option>
+                        <option value="Pharma Corp">Pharma Corp</option>
+                        <option value="MediSupply">MediSupply</option>
+                        <option value="HealthMed">HealthMed</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Add Medicine</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="processPrescriptionModal" class="modal hidden">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2>Process Prescription</h2>
+                <button class="modal__close" onclick="closeModal('processPrescriptionModal')">&times;</button>
+            </div>
+            <form id="processPrescriptionForm">
+                <div class="form-group">
+                    <label class="form-label">Patient Name</label>
+                    <input type="text" class="form-control" id="patientName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Doctor Name</label>
+                    <input type="text" class="form-control" id="doctorName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">U-Card Number</label>
+                    <input type="text" class="form-control" id="uCardNumber" placeholder="Optional">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Medicines</label>
+                    <textarea class="form-control" id="prescriptionMedicines" rows="3" placeholder="List medicines with dosage" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Amount (₹)</label>
+                    <input type="number" class="form-control" id="prescriptionTotal" step="0.01" min="0" required>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Process Prescription</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
